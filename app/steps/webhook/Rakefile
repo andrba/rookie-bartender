@@ -1,0 +1,29 @@
+require 'aws-sdk-states'
+require 'httparty'
+
+task :default do
+  state_machine_client = Aws::States::Client.new(region: 'ap-southeast-2')
+
+  while true do
+    activity_task =
+      state_machine_client.get_activity_task(activity_arn: ENV['ACTIVITY_ARN'])
+
+    break unless activity_task.nil?
+  end
+
+  order = JSON.parse(activity_task.input)
+  callback = order.delete('callback')
+
+  HTTParty.post(callback, 
+                body: order,
+                headers: { 'Content-Type' => 'application/json' })
+
+  state_machine_client.send_task_success(
+    task_token: activity_task.task_token,
+    output: JSON.generate(order))
+rescue => e
+  state_machine_client.send_task_failure(
+    task_token: activity_task.task_token,
+    error: e.class.name,
+    cause: e.message)
+end

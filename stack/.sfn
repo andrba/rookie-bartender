@@ -1,0 +1,37 @@
+# This is an auto-generated configuration file for
+# the sfn CLI. To view all available configuration
+# options, please see:
+# http://www.sparkleformation.io/docs/sfn/configuration.html
+Configuration.new do
+  # merge_api_options true
+  #   Set style of stack nesting
+  apply_nesting 'deep'
+  #   Enable processing of SparkleFormation templates
+  processing true
+  #   Provider specific options used when creating
+  #   new stacks. Options defined here are AWS specific.
+  options do
+    on_failure 'nothing'
+    notification_topics []
+    capabilities ['CAPABILITY_IAM']
+    tags do
+      creator ENV['USER']
+    end
+  end
+  #   Name of bucket in object store to hold nested
+  #   stack templates
+  #   Prefix used on generated template path prior to storage
+  #   in the object store
+  # nesting_prefix 'nested-templates'
+  #   Remote provider credentials
+  credentials do
+    provider :aws
+    #  AWS credentials information
+    aws_profile_name ENV['AWS_PROFILE']
+    # aws_access_key_id ENV['AWS_ACCESS_KEY_ID']
+    # aws_secret_access_key ENV['AWS_SECRET_ACCESS_KEY']
+    # aws_sts_session_token ENV['AWS_SESSION_TOKEN']
+    aws_region 'ap-southeast-2'
+    aws_bucket_region 'ap-southeast-2'
+  end
+end

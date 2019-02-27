@@ -1,0 +1,38 @@
+{
+  "Comment": "State Machine",
+  "StartAt": "Alcohol",
+  "States": {
+    "Alcohol": {
+      "Type": "Task",
+      "Resource": "${AlcoholLambdaArn}",
+      "Next": "Soft Drink"
+    },
+    "Soft Drink": {
+      "Type": "Task",
+      "Resource": "${SoftDrinkLambdaArn}",
+      "Next": "Start Webhook Worker"
+    },
+    "Start Webhook Worker": {
+      "Type": "Task",
+      "Resource": "arn:aws:states:::ecs:runTask",
+      "ResultPath": null,
+      "Parameters": {
+        "LaunchType": "FARGATE",
+        "Cluster": "${ClusterArn}",
+        "TaskDefinition": "${WebhookTaskDefinitionRef}",
+        "NetworkConfiguration": { 
+          "AwsvpcConfiguration": { 
+             "AssignPublicIp": "ENABLED",
+             "Subnets": ["${SubnetRef}"]
+          }
+        }
+      },
+      "Next": "Webhook"
+    },
+    "Webhook": {
+      "Type": "Task",
+      "Resource": "${WebhookActivityArn}",
+      "End": true
+    }
+  }
+}
